@@ -11,8 +11,8 @@ in the function parameters.
 Created on Fri Mar 24 13:52:37 2017
 
 @author: Juha Jeronen, juha.jeronen@tut.fi
-"""
-"""
+
+
 2020-06-02 - notes from Thu Tran:
 To avoid confusion, the `p` parameter being used here should be called spline degree.
 spline degree = spline order - 1
@@ -23,7 +23,6 @@ Here I have change the name reference to `p` from order to degree.
 from __future__ import division, print_function, absolute_import
 
 import numpy as np
-
 import bspline.bspline
 
 
