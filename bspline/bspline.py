@@ -51,14 +51,15 @@ class memoize(object):
 class Bspline():
     """Numpy implementation of Cox - de Boor algorithm in 1D."""
 
-    def __init__(self, knot_vector, order):
+    def __init__(self, knot_vector, degree):
         """Create a Bspline object.
 
         Parameters:
             knot_vector: Python list or rank-1 Numpy array containing knot vector
                          entries
-            order: Order of interpolation, e.g. 0 -> piecewise constant between
-                   knots, 1 -> piecewise linear between knots, etc.
+            degree: Degree of interpolation (degree = spline order - 1), 
+		    e.g. 0 -> piecewise constant between knots, 
+			 1 -> piecewise linear between knots, etc.
 
         Returns:
             Bspline object, callable to evaluate basis functions at given
@@ -69,11 +70,11 @@ class Bspline():
             raise ValueError("knot_vector must be Python list or rank-1 array, but got rank = %d" % (kv.ndim))
         self.knot_vector = kv
 
-        order = int(order)
-        if order < 0:
-            raise ValueError("order must be integer >= 0, but got %d" % (order))
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("degree must be integer >= 0, but got %d" % (degree))
 
-        self.p = order
+        self.p = degree
 
         #Dummy calls to the functions for memory storage
         self.__call__(0.0)
@@ -81,7 +82,7 @@ class Bspline():
 
 
     def __basis0(self, xi):
-        """Order zero basis (for internal use)."""
+        """degree zero basis (for internal use)."""
         return np.where(np.all([self.knot_vector[:-1] <=  xi,
                                 xi < self.knot_vector[1:]],axis=0), 1.0, 0.0)
 
@@ -201,7 +202,7 @@ Returns:
 See:
     `diff`: differentiation of any order >= 0
 """
-        assert self.p > 0, "order of Bspline must be > 0"  # we already handle the other case in diff()
+        assert self.p > 0, "degree of Bspline must be > 0"  # we already handle the other case in diff()
 
         # https://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/B-spline/bspline-derv.html
         #

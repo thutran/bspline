@@ -6,11 +6,18 @@ CAVEATS:
     - Some technical details differ from the MATLAB equivalents.
 
 Particularly, we use spline order `p` **as-is** instead of MATLAB's `k` parameter (`k` = `p` + 1)
-in the function parameters.
+in the function parameters. 
 
 Created on Fri Mar 24 13:52:37 2017
 
 @author: Juha Jeronen, juha.jeronen@tut.fi
+"""
+"""
+2020-06-02 - notes from Thu Tran:
+To avoid confusion, the `p` parameter being used here should be called spline degree.
+spline degree = spline order - 1
+
+Here I have change the name reference to `p` from order to degree.
 """
 
 from __future__ import division, print_function, absolute_import
@@ -20,21 +27,22 @@ import numpy as np
 import bspline.bspline
 
 
-def augknt(knots, order):
+def augknt(knots, degree):
     """Augment a knot vector.
 
 Parameters:
     knots:
         Python list or rank-1 array, the original knot vector (without endpoint repeats)
-    order:
-        int, >= 0, order of spline
+    degree:
+        int, >= 0, degree of spline
 
 Returns:
     list_of_knots:
-        rank-1 array that has (`order` + 1) copies of ``knots[0]``, then ``knots[1:-1]``, and finally (`order` + 1) copies of ``knots[-1]``.
+        rank-1 array that has (`degree` + 1) copies of ``knots[0]``, then ``knots[1:-1]``, and finally (`degree` + 1) copies of ``knots[-1]``.
 
 Caveats:
-    `order` is the spline order `p`, not `p` + 1, and existing knots are never deleted.
+    spine degree = spline order - 1
+    Existing knots are never deleted.
     The knot vector always becomes longer by calling this function.
 """
     if isinstance(knots, np.ndarray)  and  knots.ndim > 1:
@@ -42,9 +50,9 @@ Caveats:
     knots = list(knots)  # ensure Python list
 
     # One copy of knots[0] and knots[-1] will come from "knots" itself,
-    # so we only need to prepend/append "order" copies.
+    # so we only need to prepend/append "degree" copies.
     #
-    return np.array( [knots[0]] * order  +  knots  +  [knots[-1]] * order )
+    return np.array( [knots[0]] * degree  +  knots  +  [knots[-1]] * degree )
 
 
 def aveknt(t, k):
@@ -78,15 +86,15 @@ Caveat:
     return out
 
 
-def aptknt(tau, order):
+def aptknt(tau, degree):
     """Create an acceptable knot vector.
 
 Minimal emulation of MATLAB's ``aptknt``.
 
-The returned knot vector can be used to generate splines of desired `order`
+The returned knot vector can be used to generate splines of desired `degree`
 that are suitable for interpolation to the collocation sites `tau`.
 
-Note that this is only possible when ``len(tau)`` >= `order` + 1.
+Note that this is only possible when ``len(tau)`` >= `degree` + 1.
 
 When this condition does not hold, a valid knot vector is returned,
 but using it to generate a spline basis will not have the desired effect
@@ -96,15 +104,15 @@ Parameters:
     tau:
         Python list or rank-1 array, collocation sites
 
-    order:
-        int, >= 0, order of spline
+    degree:
+        int, >= 0, degree of spline
 
 Returns:
     rank-1 array, `k` copies of ``tau[0]``, then ``aveknt(tau[1:-1], k-1)``,
-    and finally `k` copies of ``tau[-1]``, where ``k = min(order+1, len(tau))``.
+    and finally `k` copies of ``tau[-1]``, where ``k = min(degree+1, len(tau))``.
 """
     tau = np.atleast_1d(tau)
-    k   = order + 1
+    k   = degree + 1
 
     if tau.ndim > 1:
         raise ValueError("tau must be a list or a rank-1 array")
@@ -182,7 +190,7 @@ Caveat:
     return np.array( out )
 
 
-def spcol(knots, order, tau):
+def spcol(knots, degree, tau):
     """Return collocation matrix.
 
 Minimal emulation of MATLAB's ``spcol``.
@@ -190,8 +198,8 @@ Minimal emulation of MATLAB's ``spcol``.
 Parameters:
     knots:
         rank-1 array, knot vector (with appropriately repeated endpoints; see `augknt`, `aptknt`)
-    order:
-        int, >= 0, order of spline
+    degree:
+        int, >= 0, degree of spline
     tau:
         rank-1 array, collocation sites
 
@@ -206,7 +214,7 @@ Returns:
         D**k  = kth derivative (0 for function value itself)
 """
     m = knt2mlt(tau)
-    B = bspline.Bspline(knots, order)
+    B = bspline.Bspline(knots, degree)
 
     dummy = B(0.)
     nbasis = len(dummy)  # perform dummy evaluation to get number of basis functions

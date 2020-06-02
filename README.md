@@ -14,13 +14,13 @@ import bspline.splinelab as splinelab
 
 ## Spline setup and evaluation
 
-p = 3              # order of spline (as-is; 3 = cubic)
+p = 3              # degree of spline (as-is; 3 = cubic). spline order = degree + 1
 nknots = 11        # number of knots to generate (here endpoints count only once)
 tau = [0.1, 0.33]  # collocation sites (i.e. where to evaluate)
 
 knots = numpy.linspace(0,1,nknots)  # create a knot vector without endpoint repeats
-k     = splinelab.augknt(knots, p)  # add endpoint repeats as appropriate for spline order p
-B     = bspline.Bspline(k, p)       # create spline basis of order p on knots k
+k     = splinelab.augknt(knots, p)  # add endpoint repeats as appropriate for spline degree p
+B     = bspline.Bspline(k, p)       # create spline basis of degree p on knots k
 
 A0 = B.collmat(tau)                 # collocation matrix for function value at sites tau
 A2 = B.collmat(tau, deriv_order=2)  # collocation matrix for second derivative at sites tau

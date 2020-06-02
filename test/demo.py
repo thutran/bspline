@@ -23,7 +23,7 @@ def test():
     # config
     ########################
 
-    p      = 3  # order of spline basis (as-is! 3 = cubic)
+    p      = 3  # degree of spline basis (as-is! 3 = cubic). spline order = degree + 1
 
     nknots = 5  # for testing: number of knots to generate (here endpoints count only once)
 
@@ -34,8 +34,8 @@ def test():
     ########################
 
     knots = np.linspace(0,1,nknots)     # create a knot vector without endpoint repeats
-    k     = splinelab.augknt(knots, p)  # add endpoint repeats as appropriate for spline order p
-    B     = bspline.Bspline(k, p)       # create spline basis of order p on knots k
+    k     = splinelab.augknt(knots, p)  # add endpoint repeats as appropriate for spline degree p
+    B     = bspline.Bspline(k, p)       # create spline basis of degree p on knots k
 
     # build some collocation matrices:
     #
@@ -66,7 +66,7 @@ def main():
     # config
     #########################################################################################
 
-    # Order of spline basis.
+    # degree of spline basis.
     #
     p = 3
 
@@ -101,7 +101,7 @@ def main():
     epsabs = epsrel * (knots[-1] - knots[0])
 
     original_knots = knots
-    knots = splinelab.augknt( knots, p )  # add repeated endpoint knots for splines of order p
+    knots = splinelab.augknt( knots, p )  # add repeated endpoint knots for splines of degree p
 
     # treat each interval separately to preserve discontinuities
     #
